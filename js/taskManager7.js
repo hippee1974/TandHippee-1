@@ -80,20 +80,7 @@ const createTaskHtml = (id,name,description,assignedTo,dueDate,staTus) =>
  `; 
    
 }
-//<span class="badge ${staTus === 'In Progress' ? 'badge-danger' : 'badge-success'}">${staTus}</span>
-   /*list.innerHTML = `
-  <div class="card-body">
-    <h5 class="card-title">${newTask.name}</h5>
-    <span class="badge badge-primary">${newTask.description}</span>
-    <p class="card-text">${newTask.assignedTo}</p>
-    <p class="card-text">${formattedDate}</p>
-    <p class="card-text">${staTus}</p>
-    <button class="btn btn-outline-success done-button ${staTus ==="completed" ? "visible" : "invisible"}">Done</a>
-    <a href="#" class="btn btn-primary">Delete</a>
-  </div>
-`;
-*/
-//card.appendChild(list);
+
 
 
 
