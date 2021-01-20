@@ -1,97 +1,158 @@
-class taskManager {
-	// Create a constructor to initialize array
-	constructor() {
-		// Set the currentId value to localStorage count
-		this.currentId = Object.keys(window.localStorage).length + 1; // sometimes it has previous count
-		setInterval(() => {
-			this.currentId = Object.keys(window.localStorage).length + 1;
-		}, 500);
-		// Initialize an empty array to save the events added
-		this.events = [];
-		// Set the currentId value to currentId
-		//this.currentId = currentId;
-	}
-	/*Add new events */
-	// Create a method with an object to add an event
-	addEvent(title, assignedTo, description, endDate, taskStatus) {
-		let currentDate = new Date();
-		const startDate = `${currentDate.getFullYear()}-${
-			currentDate.getMonth() + 1
-		}-${currentDate.getDate()}`;
-		const newEvent = {
-			title: title,
-			start: startDate,
-			end: endDate,
-			assignedTo: assignedTo,
-			dueDate: endDate,
-			taskDetails: description,
-			taskStatus: taskStatus,
-			currentId: this.currentId,
-		};
-		// push the new book into the array
-		window.localStorage.setItem(`${this.currentId}`, JSON.stringify(newEvent));
-		this.events.push(
-			JSON.parse(window.localStorage.getItem(`${this.currentId}`))
-		); //leave a copy in local storage
-	}
-	//Render triggered by the submit event
-	pendEvents() {
-		function allStorage() {
-			var values = [],
-				keys = Object.keys(localStorage),
-				i = keys.length;
-			while (i--) {
-				values[keys[i]] = JSON.parse(localStorage.getItem(keys[i]));
-			}
-			return values;
-		}
-		this.events = allStorage().filter(Boolean); //function collects and converts to object and filter the invalid element
-	}
-	// Get an Id from localStorage
-	getCardById(id) {
-		return JSON.parse(window.localStorage.getItem(id));
-	}
-	/*Display list of events*/
-	renderEvents() {
-		const eventsHtmlList = [];
-		for (let i = 0; i < Object.keys(window.localStorage).length; i++) {
-			const events = this.events[i];
-			const eventHtml = createTaskCard(
-				this.currentId - 1,
-				events.title,
-				events.taskStatus,
-				events.taskDetails,
-				events.assignedTo,
-				events.dueDate
-			);
-			eventsHtmlList.push(eventHtml);
-		}
-		//console.log(eventsHtmlList);
-		const eventsHtml = eventsHtmlList.join('\n');
-		const eventsList = document.querySelector('#card-list');
-		eventsList.innerHTML = eventsHtml;
-	}
+//taskManager input
+class TaskManager{
+    constructor(currentId=0){
+        this.tasks = [] 
+        this.currentId = currentId         
+    }
+
+// add new task
+    addTask(name,description,assignedTo,dueDate)
+{
+
+    const task= {
+        id :this.currentId++,
+        name : name,
+        description: description,
+        assignedTo : assignedTo,
+        dueDate : dueDate,
+    //Change status to "inProgress"
+        staTus : 'In Progress',
+    }
+    this.tasks.push(task);
+}
+   
+
+//delete task
+   deleteTask(taskId){
+       const newTasks = [];
+       for (let i =0; i<this.tasks.length; i++)
+       {
+         const task = this.tasks[i];
+         if (task.id !== taskId){
+             newTasks.push(task)
+             //newTasks.splice(task,1);
+        }
+     }
+     //set this.tasks to newTasks
+     this.tasks = newTasks;
+    
+ } //closed delete task
+
+    //Update task
+    getTaskById(taskId) {
+        let updateTask;
+        for (let i =0; i<this.tasks.length; i++){
+            const task = this.tasks[i];
+            if (task.id === taskId){
+                updateTask = task;
+            };
+        };
+        return updateTask;
+    };
+//display tasks on card
+    render(){
+        const tasksHtmlList = [];
+        for (let i=0; i<this.tasks.length; i++){
+            const task = this.tasks[i];
+
+    const due = new Date(task.dueDate);
+    //format date dd/mm/yy 
+    const formattedDate = due.getDate() + '/' + (due.getMonth()+1) + '/' 
+    + (due.getFullYear());
+
+    const taskHtml = createTaskHtml(task.id, task.name,task.description,task.assignedTo,formattedDate,task.staTus);
+    tasksHtmlList.push(taskHtml);
+    }//closed render for loop
+    const tasksHtml = tasksHtmlList.join('\n');
+    
+    const tasksList = document.querySelector('#taskCard');
+    tasksList.innerHTML = tasksHtml;
+ 
+} //closed render
+
+//Save task
+    save(){
+    
+    //create a JSON string to the tasks
+
+    //Store the JSON string in localStorage
+    const tasksJson = JSON.stringify(this.tasks);
+    localStorage.setItem('tasks', tasksJson);
+    const currentId = String(this.currentId);
+
+//convert the currentId in localStorage
+    localStorage.setItem('currentId', currentId)
+} //close save task
+
+//loadTask
+   loadTask() {
+  
+    //check if the localStoge is empty
+    if (localStorage.getItem('tasks')) {
+        const tasksJson = localStorage.getItem('tasks');
+    // convert into array
+    this.tasks = JSON.parse(tasksJson);
+    }
+    //check if the currentId is save in localStorage
+    if (localStorage.getItem('currentId')) {
+        const currentId = localStorage.getItem('currentId');
+
+    //convert the currentId to a Number and store in taskManager
+    this.currentId = Number(currentId);
+
+    }
+} //closed loadtask
+
+// clear task from storage
+   clearTasksInStorage(){
+    window.localStorage.clear();
+} //closed cleartask from storage
+
+//clear task list
+    clearTasksCard(){
+    while (tasksCard.firstChild){
+        tasksCard.removeChild(tasksCard.firstChild);
+    } //closed clear task list
+
+  //  clearTasksInStorage()
+
+  }
+
+
+
+}; //closed class
+
+  
+
+//added Task on cards 
+const createTaskHtml = (id,name,description,assignedTo,dueDate,staTus) =>
+{
+   return `
+   <li class="list-group-item mt-2" data-task-id=${id}>
+   <div class="d-flex w-100 mt-2 justify-content-between align-items-center">
+   <h5>Task: ${name}</h5>
+   <span class="badge ${staTus === 'In Progress' ? 'badge-danger' : 'badge-success'}">${staTus}</span>
+   </div>
+   <div class="d-flex w-100 mb-3 justify-content-between">
+   <small>task Description: ${description}</small>
+  
+   <small>Assiged Name: ${assignedTo}</small>
+  
+    </div>
+   <div class="d-flex w-100 mt-3 justify-content-between align-items-center">
+   <small>Due Date: ${dueDate}</small>
+    
+   <button class="btn btn-outline-success done-button ${staTus === 'In Progress' ? 'visible' : 'invisible'}">Make it Done</button>
+   <button class="btn btn-outline-primary delete-button"> Delete</button>
+   </div>
+   </li>
+ `; 
 }
 
-const createTaskCard = (
-	index,
-	title,
-	taskStatus,
-	taskDetails,
-	assignedTo,
-	dueDate
-) => {
-	return `
-  <li class="list-group-items card mb-3 mr-3" style="width: 18rem" id="card-${index}">
-  <div class="card-body">
-    <h5 class="card-title">${title}</h5>
-    <span class="badge badge-primary">${taskStatus}</span>
-    <p class="card-text">${taskDetails}</p>
-    <p class="card-text">${assignedTo}</p>
-    <p class="card-text">${dueDate}</p>
-    <a href="#" class="btn btn-primary done-button">Done</a>
-    <a href="#" class="btn btn-primary delete-button">Delete</a>
-  </div>
-  </li>
-`;
-};
+module.exports = TaskManager;
+  
+
+
+
+
+
