@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "test.js",
+  "dependencies": {
+    "braces": "^3.0.2",
+    "which-module": "^2.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^8.2.1"
+  },
   "scripts": {
     "test": "mocha"
   },

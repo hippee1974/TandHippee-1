@@ -1,17 +1,17 @@
-
 const TaskManager = require('./js/taskManager.js');
 const assert = require('assert');
 
 console.log(TaskManager);
-describe("TaskManager", () => {
-  it("should add a task",  () => {
-    const taskManager = new TaskManager(0);
-    let len = taskManager.tasks.length;
-    taskManager.addTask("name", "description", "assignedTo", "dueDate")
-      assert.ok(len < taskManager.tasks.length);
-  })
-  
-  it("should delete a task", function () {
+describe("TaskManager", () =>{
+    it("should add a task", () =>{
+        const taskManager = new TaskManager(0);
+        let len = taskManager.tasks.length;
+        taskManager.addTask("name", "description", "assignedTo", "dueDate")
+        assert.ok(len<taskManager.tasks.length);
+    })
+
+
+it("should delete a task", function () {
     const taskManager = new TaskManager(0);
     taskManager.addTask("name", "description", "assignedTo", "dueDate")
     let len = taskManager.tasks.length;
@@ -47,6 +47,3 @@ describe("TaskManager", () => {
   })
 
 })
-
-
-
